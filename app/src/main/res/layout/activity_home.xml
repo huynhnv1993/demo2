@@ -21,39 +21,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <Button
-                android:text="Send"
-                android:id="@+id/btn_send"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content" />
-            <TextView
-                android:textSize="16sp"
-                android:text="Data hex"
-                android:id="@+id/textview_datahex_MSCARD"
-                android:layout_width="match_parent"
-                android:layout_height="100dp" />
-            <TextView
-                android:textSize="16sp"
-                android:text="Data string"
-                android:id="@+id/textview_datastring_MSCARD"
-                android:layout_width="match_parent"
-                android:layout_height="100dp" />
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar_home"
                 android:background="#337cd4"
                 app:title="Trang chủ"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"></android.support.v7.widget.Toolbar>
-            <com.daimajia.slider.library.SliderLayout
-                android:id="@+id/slider_home"
-                android:layout_width="match_parent"
-                android:layout_height="130dp">
-            </com.daimajia.slider.library.SliderLayout>
             <LinearLayout
                 android:background="#74b1ed"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="250dp">
+                android:layout_height="match_parent">
                 <TextView
                     android:textSize="20sp"
                     android:textStyle="bold"
@@ -69,24 +47,6 @@
                     android:padding="5dp">
                 </android.support.v7.widget.RecyclerView>
             </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:text="Some title here"
-                android:textSize="28sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:text="Lorem ipsum dolor sit amet...
-Ngày hôm sau, Diệp Tử quả nhiên ứng ước, mang theo Tần Vấn Thiên bọn hắn ra khách sạn.
-
-Vị này tại khách sạn làm việc mỹ mạo thị nữ tu vi Tiên Đế cảnh giới, lại tuổi trẻ tướng mạo đẹp, nếu như đặt ở Thanh Huyền, tuyệt đối là cực kỳ chói mắt nhân vật rồi, nhưng nơi này là Thì Quang Chi Thành, nàng vậy mà gần kề chỉ là một cái thị nữ, cái này là địa vực chênh lệch, lớn đến không cảm tưởng giống như, Nam Hoàng Nữ Đế đều ẩn ẩn cảm giác có chút không chân thực, các nàng, tại đi theo Tần Vấn Thiên trước đó, bất quá cũng chỉ là Tiên Đế cảnh giới mà thôi."
-                android:textSize="18sp" />
         </LinearLayout>
     </ScrollView>
     <android.support.design.widget.NavigationView

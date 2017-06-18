@@ -11,4 +11,5 @@ public class Server {
     public static String UrlproductActivity = "http://" + localhost + "/server/getdataproduct.php?page=";
     public static String Urlrespartner = "http://" + localhost + "/server/respartner.php";
     public static String Urlsaleorder = "http://" + localhost + "/server/saleorder.php";
+    public static String Urlsenddata = "http://" + localhost + "/server/senddata.php";
 }

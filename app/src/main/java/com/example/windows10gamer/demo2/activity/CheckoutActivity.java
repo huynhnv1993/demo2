@@ -141,9 +141,57 @@ public class CheckoutActivity extends AppCompatActivity {
                         public void onResponse(final String partner_id) {
                             Log.d("respartner id",partner_id);
                             if (Integer.parseInt(partner_id) > 0){
-                                Intent intent = new Intent(getApplicationContext(),PaymentActivity.class);
-                                intent.putExtra("partner_id",partner_id);
-                                startActivity(intent);
+                                RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
+                                StringRequest request = new StringRequest(Request.Method.POST, Server.Urlsaleorder, new Response.Listener<String>() {
+                                    @Override
+                                    public void onResponse(String response) {
+                                        if (response.equals("1")){
+//                                            HomeActivity.arrCart.clear();
+                                            Intent intent = new Intent(getApplicationContext(),PaymentActivity.class);
+                                            intent.putExtra("partner_id",partner_id);
+                                            Log.d("partner_id",partner_id);
+                                            startActivity(intent);
+                                        }else{
+                                            CheckConnection.ShowToast_Short(getApplicationContext(),response + "Dữ liệu giỏ hàng đã bị lỗi");
+                                            Log.d("error",response);
+
+//                                                    Error:
+//                                            1: thanh cong
+//                                            2: Dữ liệu gửi đi rỗng
+//                                            3: Có lỗi khi tạo đơn hàng
+//                                            4: Có lỗi khi lấy thông tin giá và thuế
+//                                            5: Có lỗi khi tạo order_line
+//                                            6: Có lỗi khi thêm thuế
+//                                            7: Có lỗi khi thay đổi tên
+//
+                                        }
+                                    }
+                                }, new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+
+                                    }
+                                }){
+                                    @Override
+                                    protected Map<String, String> getParams() throws AuthFailureError {
+                                        JSONArray jsonArray = new JSONArray();
+                                        for (int i = 0 ; i < HomeActivity.arrCart.size() ; i++){
+                                            JSONObject jsonObject = new JSONObject();
+                                            try {
+                                                jsonObject.put("partner_id",partner_id);
+                                                jsonObject.put("product_id",HomeActivity.arrCart.get(i).getProduct_id());
+                                                jsonObject.put("qty",HomeActivity.arrCart.get(i).getQty());
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                            jsonArray.put(jsonObject);
+                                        }
+                                        HashMap<String,String> hashMap = new HashMap<String, String>();
+                                        hashMap.put("json",jsonArray.toString());
+                                        return hashMap;
+                                    }
+                                };
+                                queue.add(request);
                             }else {
                                 CheckConnection.ShowToast_Short(getApplicationContext(),"Bạn hãy kiểm tra lại thông tin");
                             }
