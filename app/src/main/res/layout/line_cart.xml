@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="10">
+    <LinearLayout
+        android:layout_margin="5dp"
+        android:layout_weight="3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:adjustViewBounds="true"
+            android:layout_margin="5dp"
+            android:id="@+id/imageview_cart"
+            android:layout_width="match_parent"
+            android:layout_height="100dp" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_margin="5dp"
+        android:layout_weight="7"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="#10100f"
+            android:textSize="20sp"
+            android:text="Tên sản phẩm"
+            android:id="@+id/textview_name_c"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_marginTop="3dp"
+            android:textColor="#f40"
+            android:textSize="15sp"
+            android:text="Giá sản phẩm"
+            android:id="@+id/textview_cost_c"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Button
+                android:focusable="false"
+                android:layout_marginTop="5dp"
+                android:textSize="20sp"
+                android:text="-"
+                android:id="@+id/button_minus"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content" />
+            <Button
+                android:background="@null"
+                android:focusable="false"
+                android:layout_marginTop="5dp"
+                android:textSize="25sp"
+                android:text="1"
+                android:id="@+id/button_values"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content" />
+            <Button
+                android:focusable="false"
+                android:layout_marginTop="5dp"
+                android:textSize="20sp"
+                android:text="+"
+                android:id="@+id/button_plus"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

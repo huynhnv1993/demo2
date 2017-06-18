@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+<android.support.v4.widget.DrawerLayout
+    android:id="@+id/drawerlayout_home"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/bottom_container"
+        android:layout_below="@id/title"
+        android:fillViewport="false"
+        android:orientation="vertical"
+        android:scrollbars="none">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <Button
+                android:text="Send"
+                android:id="@+id/btn_send"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:textSize="16sp"
+                android:text="Data hex"
+                android:id="@+id/textview_datahex_MSCARD"
+                android:layout_width="match_parent"
+                android:layout_height="100dp" />
+            <TextView
+                android:textSize="16sp"
+                android:text="Data string"
+                android:id="@+id/textview_datastring_MSCARD"
+                android:layout_width="match_parent"
+                android:layout_height="100dp" />
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar_home"
+                android:background="#337cd4"
+                app:title="Trang chủ"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"></android.support.v7.widget.Toolbar>
+            <com.daimajia.slider.library.SliderLayout
+                android:id="@+id/slider_home"
+                android:layout_width="match_parent"
+                android:layout_height="130dp">
+            </com.daimajia.slider.library.SliderLayout>
+            <LinearLayout
+                android:background="#74b1ed"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="250dp">
+                <TextView
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="#f20"
+                    android:layout_margin="5dp"
+                    android:text="Sản phẩm mới nhất"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recyclerview_home1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="5dp">
+                </android.support.v7.widget.RecyclerView>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Some title here"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Lorem ipsum dolor sit amet...
+Ngày hôm sau, Diệp Tử quả nhiên ứng ước, mang theo Tần Vấn Thiên bọn hắn ra khách sạn.
+
+Vị này tại khách sạn làm việc mỹ mạo thị nữ tu vi Tiên Đế cảnh giới, lại tuổi trẻ tướng mạo đẹp, nếu như đặt ở Thanh Huyền, tuyệt đối là cực kỳ chói mắt nhân vật rồi, nhưng nơi này là Thì Quang Chi Thành, nàng vậy mà gần kề chỉ là một cái thị nữ, cái này là địa vực chênh lệch, lớn đến không cảm tưởng giống như, Nam Hoàng Nữ Đế đều ẩn ẩn cảm giác có chút không chân thực, các nàng, tại đi theo Tần Vấn Thiên trước đó, bất quá cũng chỉ là Tiên Đế cảnh giới mà thôi."
+                android:textSize="18sp" />
+        </LinearLayout>
+    </ScrollView>
+    <android.support.design.widget.NavigationView
+        android:id="@+id/navigation_home"
+        android:layout_gravity="start"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:id="@+id/home"
+                android:gravity="center"
+                android:weightSum="10"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="70dp">
+                <LinearLayout
+                    android:layout_weight="3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:src="@drawable/homeicon"
+                        android:layout_margin="5dp"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_weight="7"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_margin="5dp"
+                        android:textColor="#f20"
+                        android:textSize="20sp"
+                        android:text="Trang chủ"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:background="#f20"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"></LinearLayout>
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="400dp">
+                <LinearLayout
+                    android:background="#69a2e7"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp">
+                    <TextView
+                        android:layout_margin="5dp"
+                        android:textColor="#fff"
+                        android:textSize="20sp"
+                        android:text="Danh sách sản phẩm"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+                <ListView
+                    android:id="@+id/listview_home"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                </ListView>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_weight="3"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+
+            </LinearLayout>
+        </LinearLayout>
+    </android.support.design.widget.NavigationView>
+</android.support.v4.widget.DrawerLayout>
+
+</LinearLayout>

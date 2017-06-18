@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.windows10gamer.demo2.activity.PaymentActivity">
+    <android.support.v7.widget.Toolbar
+        app:titleTextColor="#f9f6f5"
+        android:background="#716562"
+        app:title="Phương thức thanh toán"
+        android:id="@+id/toolbar_payment"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+
+    </android.support.v7.widget.Toolbar>
+    <TextView
+        android:text="Xin hãy chọn phương thức thanh toán cho đơn hàng của bạn"
+        android:layout_margin="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <Spinner
+        android:id="@+id/spinner_payment"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content">
+
+    </Spinner>
+    <Button
+        android:layout_marginTop="50dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:id="@+id/button_pay"
+        android:text="Xác nhận"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content" />
+</LinearLayout>
