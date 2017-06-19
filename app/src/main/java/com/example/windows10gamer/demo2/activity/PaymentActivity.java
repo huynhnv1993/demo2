@@ -17,6 +17,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -57,7 +58,7 @@ public class PaymentActivity extends AppCompatActivity {
     String partner_id = "0";
     Toolbar toolbar;
     Spinner spinner;
-    private Button btnSend;
+    private Button btnSend, btnBarcode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +67,6 @@ public class PaymentActivity extends AppCompatActivity {
         mContext = getApplicationContext();
         mpaioManager = new MpaioManager(getApplicationContext());
         connectionDialog = new RxConnectionDialog(this, mpaioManager);
-
         partner_id = getIntent().getStringExtra("partner_id");
         alertbox = showDialogcustom();
         EventButton();
@@ -138,6 +138,8 @@ public class PaymentActivity extends AppCompatActivity {
                                 + " Data : " + Converter.toHexString(mpaioMessage.getData()));
                         ToastUtil.show(mContext, "received data part : " + Converter.toHexString(data));
                         ToastUtil.show(mContext, "(string) : " + (data == null ? "" : new String(data)));
+                        mpaioManager.rxSyncRequest(mpaioManager.getNextAid(), new MpaioCommand(MpaioCommand.STOP).getCode(), new byte[0])
+                                .subscribe(getMessageSubscriber());
                         if (data != null && data != savedata){
                             savedata = data;
                             senddata = Converter.toHexString(mpaioMessage.getData());
@@ -202,6 +204,10 @@ public class PaymentActivity extends AppCompatActivity {
                     return;
                 }
                 String cmdString = "0003";
+                TextView textView1 = (TextView) alertbox.findViewById(R.id.textview_insertcard);
+                TextView textView2 = (TextView) alertbox.findViewById(R.id.title_dialog);
+                textView1.setText("INSERT CARD");
+                textView2.setText("CARD");
                 try {
                     short cmdShort = Short.parseShort(cmdString, 16);
                     byte[] cmd =  Converter.toBigEndianBytes(cmdShort);
@@ -214,6 +220,12 @@ public class PaymentActivity extends AppCompatActivity {
                     logger.i("param", " param : " + Converter.toHexString(param));
                     mpaioManager.rxSyncRequest(mpaioManager.getNextAid(), cmd, param)
                             .subscribe();
+
+                    mpaioManager.rxSyncRequest(mpaioManager.getNextAid(), new MpaioCommand(MpaioCommand.READ_EMV_CARD).getCode(), new byte[0])
+                            .subscribe(); //Command for activating EMV card mode
+                    mpaioManager.rxSyncRequest(mpaioManager.getNextAid(), new MpaioCommand(MpaioCommand.READ_RFID_CARD).getCode(),null)
+                            .subscribe(); //Command for activating RFID card mode
+
                     alertbox.show();
                 }catch (NumberFormatException e) {
                     ToastUtil.show(getApplicationContext(), "Input valid number");
@@ -222,6 +234,34 @@ public class PaymentActivity extends AppCompatActivity {
                 InputMethodManager imm = (InputMethodManager) getSystemService(
                         Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+            }
+        });
+
+        btnBarcode = (Button) findViewById(R.id.button_barcode);
+        btnBarcode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!mpaioManager.isConnected()) {
+                    connectionDialog.show();
+                    return;
+                }
+                TextView textView1 = (TextView) alertbox.findViewById(R.id.textview_insertcard);
+                TextView textView2 = (TextView) alertbox.findViewById(R.id.title_dialog);
+                textView1.setText("Barcode");
+                textView2.setText("READ BARCODE");
+                try {
+                    mpaioManager.rxSyncRequest(mpaioManager.getNextAid(), new MpaioCommand(MpaioCommand.READ_BARCODE).getCode(), new byte[0])
+                            .subscribe(); //Command for activating Barcode Mode
+                    alertbox.show();
+                }catch (NumberFormatException e) {
+                    ToastUtil.show(getApplicationContext(), "Input valid number");
+                    e.printStackTrace();
+                }
+
+                InputMethodManager imm = (InputMethodManager) getSystemService(
+                        Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+
             }
         });
     }
@@ -367,7 +407,6 @@ public class PaymentActivity extends AppCompatActivity {
 
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_payment);
-        spinner = (Spinner) findViewById(R.id.spinner_payment);
 
     }
 
