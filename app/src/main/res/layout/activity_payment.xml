@@ -31,8 +31,16 @@
         android:layout_marginTop="50dp"
         android:layout_gravity="center"
         android:gravity="center"
-        android:id="@+id/button_pay"
+        android:id="@+id/button_readcard"
         android:text="Read Card"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content" />
+    <Button
+        android:layout_marginTop="50dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:id="@+id/button_pincard"
+        android:text="READ PIN Card"
         android:layout_width="200dp"
         android:layout_height="wrap_content" />
     <Button
@@ -41,6 +49,14 @@
         android:gravity="center"
         android:id="@+id/button_barcode"
         android:text="Read Barcode"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content" />
+    <Button
+        android:layout_marginTop="50dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:id="@+id/button_pay"
+        android:text="Confirm"
         android:layout_width="200dp"
         android:layout_height="wrap_content" />
 </LinearLayout>

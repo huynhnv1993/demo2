@@ -3,8 +3,11 @@ package com.example.windows10gamer.demo2.activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.MediaScannerConnection;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -28,6 +31,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.windows10gamer.demo2.ultil.CheckConnection;
 import com.example.windows10gamer.demo2.ultil.Server;
+import com.kyanogen.signatureview.SignatureView;
 import com.samilcts.media.State;
 import com.samilcts.sdk.mpaio.MpaioManager;
 
@@ -41,10 +45,16 @@ import com.samilcts.util.android.Converter;
 import com.samilcts.util.android.Logger;
 import com.samilcts.util.android.ToastUtil;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
 import rx.Subscriber;
+
 
 public class PaymentActivity extends AppCompatActivity {
     private static final String TAG = "PaymentActivity";
@@ -54,11 +64,20 @@ public class PaymentActivity extends AppCompatActivity {
     private Context mContext;
     private Dialog alertbox,alertboxsign;
     private byte[] savedata = null;
+    private byte[] savepincard = null;
+    boolean checkpin = false,checkdata = false;
     private String senddata = "";
+    private String pincard ="";
     String partner_id = "0";
     Toolbar toolbar;
     Spinner spinner;
-    private Button btnSend, btnBarcode;
+    private Button btnSend, btnBarcode, btnCard, btnPin;
+
+    Bitmap bitmap;
+    Button clear,save;
+    SignatureView signatureView;
+    String path;
+    private static final String IMAGE_DIRECTORY = "/signdemo";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +88,7 @@ public class PaymentActivity extends AppCompatActivity {
         connectionDialog = new RxConnectionDialog(this, mpaioManager);
         partner_id = getIntent().getStringExtra("partner_id");
         alertbox = showDialogcustom();
+        alertboxsign = showDialogSign();
         EventButton();
 
         mpaioManager.onReceived()
@@ -113,7 +133,7 @@ public class PaymentActivity extends AppCompatActivity {
                 .mergeWith(mpaioManager.onReadMsCard())
                 .mergeWith(mpaioManager.onReadEmvCard())
                 .mergeWith(mpaioManager.onReadRfidCard())
-                .mergeWith(mpaioManager.onPressPinPad())
+//                .mergeWith(mpaioManager.onPressPinPad())
                 .mergeWith(mpaioManager.onNotifyPrepaidTransaction())
                 .mergeWith(mpaioManager.onReadPrepaidTransactionLog())
                 .subscribe(new Subscriber<MpaioMessage>() {
@@ -138,8 +158,6 @@ public class PaymentActivity extends AppCompatActivity {
                                 + " Data : " + Converter.toHexString(mpaioMessage.getData()));
                         ToastUtil.show(mContext, "received data part : " + Converter.toHexString(data));
                         ToastUtil.show(mContext, "(string) : " + (data == null ? "" : new String(data)));
-                        mpaioManager.rxSyncRequest(mpaioManager.getNextAid(), new MpaioCommand(MpaioCommand.STOP).getCode(), new byte[0])
-                                .subscribe(getMessageSubscriber());
                         if (data != null && data != savedata){
                             savedata = data;
                             senddata = Converter.toHexString(mpaioMessage.getData());
@@ -147,14 +165,47 @@ public class PaymentActivity extends AppCompatActivity {
                             Log.d("senddata2" , new String(data));
                             if (alertbox.isShowing()){
                                 alertbox.dismiss();
-                                SendData(senddata);
                             }
-//                            Intent intent = new Intent(getApplicationContext(),Main2Activity.class);
-//                            intent.putExtra("data",data);
-//                            startActivity(intent);
                         }
-//                        ToastUtil.show(mContext, "notify. data part : " + Converter.toHexString(data) );
-//                        ToastUtil.show(mContext, "(string) : " + (data == null ? "" : new String(data)));
+                        mpaioManager.rxSyncRequest(mpaioManager.getNextAid(), new MpaioCommand(MpaioCommand.STOP).getCode(), new byte[0])
+                                .subscribe(getMessageSubscriber());
+                    }
+                });
+        mpaioManager.onPressPinPad() //Receive notification of PIN PAD input data
+                .subscribe(new Subscriber<MpaioMessage>() {
+                    @Override
+                    public void onCompleted() {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        String msg = null == e.getMessage() ? e.toString() : e.getMessage();
+                        ToastUtil.show(mContext, "ERROR : " + msg);
+                    }
+
+                    @Override
+                    public void onNext(MpaioMessage mpaioMessage) {
+                        byte[] data = mpaioMessage.getData();
+
+                        logger.i(TAG, "AID : " + Converter.toInt(mpaioMessage.getAID())
+                                + " CMD : " + Converter.toHexString(mpaioMessage.getCommandCode())
+                                + " Data : " + Converter.toHexString(mpaioMessage.getData()));
+                        ToastUtil.show(mContext, "received data part : " + Converter.toHexString(data));
+                        ToastUtil.show(mContext, "(string) : " + (data == null ? "" : new String(data)));
+
+                        pincard = pincard.concat(new String(data));
+                        Log.d("pincard" , pincard);
+                        if (new String(data) == "E"){
+                            mpaioManager.rxSyncRequest(mpaioManager.getNextAid(), new MpaioCommand(MpaioCommand.STOP).getCode(), new byte[0])
+                                    .subscribe(getMessageSubscriber());
+                            ToastUtil.show(getApplicationContext(),"Please Confirm",3000);
+                        }else if(new String(data) == "C"){
+                            mpaioManager.rxSyncRequest(mpaioManager.getNextAid(), new MpaioCommand(MpaioCommand.STOP).getCode(), new byte[0])
+                                    .subscribe(getMessageSubscriber());
+                            pincard = "";
+                            ToastUtil.show(getApplicationContext(),"Please try again input pincard",3000);
+                        }
                     }
                 });
 
@@ -164,6 +215,68 @@ public class PaymentActivity extends AppCompatActivity {
         }else {
             CheckConnection.ShowToast_Short(getApplicationContext(),"Bạn hãy kiểm tra lại kết nối INTERNET");
         }
+    }
+
+
+    private Dialog showDialogSign() {
+        Dialog aDialogSign = new Dialog(this);
+        aDialogSign.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        aDialogSign.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
+        aDialogSign.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        aDialogSign.setContentView(R.layout.dialog_sign);
+        aDialogSign.setCancelable(false);
+
+        signatureView = (SignatureView) aDialogSign.findViewById(R.id.signature_view);
+        clear = (Button) aDialogSign.findViewById(R.id.clear);
+        save = (Button) aDialogSign.findViewById(R.id.save);
+
+        clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signatureView.clearCanvas();
+            }
+        });
+
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bitmap = signatureView.getSignatureBitmap();
+                path = saveImage(bitmap);
+            }
+        });
+
+        return aDialogSign;
+    }
+
+    public String saveImage(Bitmap myBitmap) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        myBitmap.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
+        File wallpaperDirectory = new File(
+                Environment.getExternalStorageDirectory() + IMAGE_DIRECTORY /*iDyme folder*/);
+        // have the object build the directory structure, if needed.
+        if (!wallpaperDirectory.exists()) {
+            wallpaperDirectory.mkdirs();
+            Log.d("hhhhh",wallpaperDirectory.toString());
+        }
+
+        try {
+            File f = new File(wallpaperDirectory, Calendar.getInstance()
+                    .getTimeInMillis() + ".jpg");
+            f.createNewFile();
+            FileOutputStream fo = new FileOutputStream(f);
+            fo.write(bytes.toByteArray());
+            MediaScannerConnection.scanFile(PaymentActivity.this,
+                    new String[]{f.getPath()},
+                    new String[]{"image/jpeg"}, null);
+            fo.close();
+            Log.d("TAG", "File Saved::--->" + f.getAbsolutePath());
+
+            return f.getAbsolutePath();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        return "";
+
     }
 
     private Dialog showDialogcustom(){
@@ -195,8 +308,8 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     private void EventButton() {
-        btnSend = (Button) findViewById(R.id.button_pay);
-        btnSend.setOnClickListener(new View.OnClickListener() {
+        btnCard = (Button) findViewById(R.id.button_readcard);
+        btnCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!mpaioManager.isConnected()) {
@@ -220,7 +333,6 @@ public class PaymentActivity extends AppCompatActivity {
                     logger.i("param", " param : " + Converter.toHexString(param));
                     mpaioManager.rxSyncRequest(mpaioManager.getNextAid(), cmd, param)
                             .subscribe();
-
                     mpaioManager.rxSyncRequest(mpaioManager.getNextAid(), new MpaioCommand(MpaioCommand.READ_EMV_CARD).getCode(), new byte[0])
                             .subscribe(); //Command for activating EMV card mode
                     mpaioManager.rxSyncRequest(mpaioManager.getNextAid(), new MpaioCommand(MpaioCommand.READ_RFID_CARD).getCode(),null)
@@ -264,17 +376,60 @@ public class PaymentActivity extends AppCompatActivity {
 
             }
         });
+
+        btnPin = (Button) findViewById(R.id.button_pincard);
+        btnPin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!mpaioManager.isConnected()) {
+                    connectionDialog.show();
+                    return;
+                }
+                TextView textView1 = (TextView) alertbox.findViewById(R.id.textview_insertcard);
+                TextView textView2 = (TextView) alertbox.findViewById(R.id.title_dialog);
+                textView1.setText("(Number : 0~9, F1 : ‘*’, F2 : ‘#’, Cancel : ‘C’, Enter : ‘E’, Back Space: ‘<’)");
+                textView2.setText("READ PIN CARD");
+                try {
+                    mpaioManager.rxSyncRequest(mpaioManager.getNextAid(), new MpaioCommand(MpaioCommand.READ_PIN_PAD).getCode(), new byte[0])
+                            .subscribe(); //Command for activating PIN PAD input mode
+                    ToastUtil.show(getApplicationContext(),"Input pincard",5000);
+//                    alertbox.show();
+                }catch (NumberFormatException e) {
+                    ToastUtil.show(getApplicationContext(), "Input valid number");
+                    e.printStackTrace();
+                }
+                InputMethodManager imm = (InputMethodManager) getSystemService(
+                        Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+            }
+        });
+        btnSend = (Button) findViewById(R.id.button_pay);
+        btnSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SendData(senddata);
+            }
+        });
     }
 
     private void SendData(final String s){
+        Log.d("pincard" , pincard);
+        Log.d("senddata" , senddata);
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         StringRequest stringRequest = new StringRequest(Request.Method.POST, Server.Urlsenddata, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 if (response.equals("1")){
+                    long total = 0;
+                    for (int i = 0 ; i <HomeActivity.arrCart.size() ; i++){
+                        total += HomeActivity.arrCart.get(i).getList_price() * HomeActivity.arrCart.get(i).getQty();
+                    }
                     HomeActivity.arrCart.clear();
                     Intent intent = new Intent(getApplicationContext(),ConfirmationActivity.class);
                     intent.putExtra("partner_id",partner_id);
+                    intent.putExtra("data",savedata);
+                    intent.putExtra("pincard",pincard);
+                    intent.putExtra("total",total);
                     startActivity(intent);
                 }else{
                     Log.d("error",response);
